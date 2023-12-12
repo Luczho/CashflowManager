@@ -41,7 +41,7 @@ class BankAccount(models.Model):
 
 class ExchangeRate(models.Model):
     date = models.DateField(auto_now_add=True)
-    currency = models.CharField()
+    currency = models.CharField(max_length=5)
 
 
 class Invoice(models.Model):
@@ -65,7 +65,7 @@ class Invoice(models.Model):
     net_amount = models.DecimalField(max_digits=10, decimal_places=2)
     pln_net_amount = models.DecimalField(max_digits=10, decimal_places=2)
     pln_gross_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    vat_rate = models.IntegerField(max_length=3)
+    vat_rate = models.IntegerField()
     file = models.FilePathField()
     printed = models.BooleanField(default=False)
     in_optima = models.BooleanField(default=False)
@@ -74,8 +74,8 @@ class Invoice(models.Model):
 class Cost(models.Model):
     uid = models.CharField(max_length=50, help_text='unique id of the cost id_created_date_company_symbol ex. 1_2020-01-01_NUT')
     created_date = models.DateField(auto_now_add=True)
-    customer = models.ForeignKey(Company, on_delete=models.DO_NOTHING, related_name='costs') # company.costs.all()
-    supplier = models.ForeignKey(Company, on_delete=models.DO_NOTHING, related_name='costs')
+    customer = models.ForeignKey(Company, on_delete=models.DO_NOTHING, related_name='customer_costs') # company.costs.all()
+    supplier = models.ForeignKey(Company, on_delete=models.DO_NOTHING, related_name='supplier_costs')
     cost_description = models.TextField()
     invoice = models.OneToOneField(Invoice, null=True, on_delete=models.DO_NOTHING)
     paid = models.BooleanField(default=False)
