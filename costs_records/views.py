@@ -12,4 +12,7 @@ class CostListView(ListView):
     template_name = 'costs_records/costs-table.html'
     context_object_name = 'costs'
 
-    fields_names = Cost._meta.get_fields()
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cost_fields'] = Cost._meta.get_fields()
+        return context
