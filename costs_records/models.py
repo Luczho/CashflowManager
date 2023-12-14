@@ -63,10 +63,10 @@ class Invoice(models.Model):
     currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, default=ZLOTY)
     gross_amount = models.DecimalField(max_digits=10, decimal_places=2)
     net_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    pln_net_amount = models.DecimalField(max_digits=10, decimal_places=2)
     pln_gross_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    pln_net_amount = models.DecimalField(max_digits=10, decimal_places=2)
     vat_rate = models.IntegerField()
-    file = models.FilePathField()
+    file = models.FileField(null=True)
     printed = models.BooleanField(default=False)
     in_optima = models.BooleanField(default=False)
 
