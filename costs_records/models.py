@@ -8,6 +8,10 @@ class Company(models.Model):
     is_contractor = models.BooleanField()
 
 
+    def __str__(self):
+        return self.name
+
+
 class Address(models.Model):
     company = models.OneToOneField(Company, on_delete=models.DO_NOTHING)
     street_name = models.CharField(max_length=50)
@@ -77,11 +81,16 @@ class Cost(models.Model):
     customer = models.ForeignKey(Company, on_delete=models.DO_NOTHING, related_name='customer_costs') # company.costs.all()
     supplier = models.ForeignKey(Company, on_delete=models.DO_NOTHING, related_name='supplier_costs')
     cost_description = models.TextField()
-    invoice = models.OneToOneField(Invoice, null=True, on_delete=models.DO_NOTHING)
+    invoice = models.OneToOneField(Invoice, blank=True, null=True, on_delete=models.DO_NOTHING)
     paid = models.BooleanField(default=False)
     payment_date = models.DateField()
     asap = models.BooleanField(default=False)
     urgent = models.BooleanField(default=False)
 
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        self.uid = f"{self.id}_{self.created_date}_{self.customer.symbol}"
+        if self.payment_date:
+            self.paid = True
+        super().save(force_insert, force_update, using, update_fields)
 
 
