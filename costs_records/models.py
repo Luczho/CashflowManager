@@ -2,11 +2,10 @@ from django.db import models
 
 
 class Company(models.Model):
-    symbol = models.CharField(max_length=10, help_text='symbol of the company')
+    symbol = models.CharField(max_length=10, help_text='Symbol of the company, ex. NUT, SPX')
     name = models.CharField(max_length=100)
     vat_eu = models.CharField(max_length=20)
     is_contractor = models.BooleanField()
-
 
     def __str__(self):
         return self.name
@@ -28,12 +27,12 @@ class BankAccount(models.Model):
     LEJ = "RON"
     FORINT = "HUF"
     CURRENCY_CHOICES = [
-        (EURO, "Euro"),
-        (ZLOTY, "Zloty"),
-        (DOLAR, "Dolar"),
-        (KORONA, "Korona"),
-        (LEJ, "Lej"),
-        (FORINT, "Forint")
+        (EURO, "EUR"),
+        (ZLOTY, "PLN"),
+        (DOLAR, "USD"),
+        (KORONA, "CZK"),
+        (LEJ, "RON"),
+        (FORINT, "HUF")
     ]
 
     company = models.ForeignKey(Company, on_delete=models.DO_NOTHING)
@@ -54,10 +53,10 @@ class Invoice(models.Model):
     DOLAR = "USD"
     KORONA = "CZK"
     CURRENCY_CHOICES = [
-        (EURO, "Euro"),
-        (ZLOTY, "Zloty"),
-        (DOLAR, "Dolar"),
-        (KORONA, "Korona")
+        (EURO, "EUR"),
+        (ZLOTY, "PLN"),
+        (DOLAR, "USD"),
+        (KORONA, "CZK")
     ]
 
     date = models.DateField()
