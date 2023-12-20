@@ -20,6 +20,7 @@ class CostForm(forms.ModelForm):
         self.fields['supplier'].queryset = Company.objects.filter(is_contractor=True)
 
 
+
 class CompanyForm(forms.ModelForm):
     class Meta:
         model = Company
@@ -39,7 +40,6 @@ class BankAccountForm(forms.ModelForm):
 
 
 class InvoiceForm(forms.ModelForm):
-
     date = forms.DateField(widget=forms.SelectDateWidget)
     due_date = forms.DateField(widget=forms.SelectDateWidget)
 
@@ -54,6 +54,7 @@ class InvoiceForm(forms.ModelForm):
         for field in self.fields:
             self.fields[field].required = False
 
+        # self.fields['date'].required = False
 
             #
             # any(for field in forms.fields if fields is not None):
