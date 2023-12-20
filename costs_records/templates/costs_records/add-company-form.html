@@ -1,4 +1,28 @@
 {% extends 'costs_records/base.html' %}
 {% load crispy_forms_tags %}
 {% block content %}
+    <div class="content-section">
+        <form method="POST">
+            {% csrf_token %}
+            <div class="card border-0 shadow mb-4">
+                <div class="card-body">
+                    <fieldset class="form-group">
+                        <legend class="border-bottom mb-4">Company details</legend>
+                        {{ company_form | crispy }}
+                    </fieldset>
+                </div>
+            </div>
+            <div class="card border-0 shadow mb-4">
+                <div class="card-body">
+                    <fieldset class="form-group">
+                        <legend class="border-bottom mb-4">Company address</legend>
+                        {{ address_form | crispy }}
+                    </fieldset>
+                </div>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="submit">Add Company</button>
+            </div>
+        </form>
+    </div>
 {% endblock %}
