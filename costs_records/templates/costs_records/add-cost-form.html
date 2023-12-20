@@ -2,24 +2,32 @@
 {% load crispy_forms_tags %}
 {% block content %}
     <div class="content-section">
-    <form method="POST">
-        {% csrf_token %}
-        <fieldset class="form-group">
-            <legend class="border-bottom mb-4">New Cost</legend>
-            {{ cost_form.customer|as_crispy_field }}
-            {{ cost_form.supplier|as_crispy_field }}
-            <a href="{% url 'add-company' %}" class="btn btn-outline-success" type="button">Add customer/supplier</a>
-            <p></p>
-            {{ cost_form.cost_description|as_crispy_field }}
-            {{ cost_form.payment_date|as_crispy_field }}
-            <p></p>
-            <a>If you already have invoice, fill form below</a>
-            <p></p>
-            {{ invoice_form | crispy }}
-        </fieldset>
-        <div class="form-group">
-            <button class="btn btn-outline-info" type="submit">Add Cost</button>
-        </div>
-    </form>
-</div>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="card border-0 shadow mb-4">
+                <div class="card-body">
+                    <fieldset class="form-group">
+                        <legend class="border-bottom mb-4">New Cost</legend>
+                        {{ cost_form.customer|as_crispy_field }}
+                        {{ cost_form.supplier|as_crispy_field }}
+                        <a href="{% url 'add-company' %}" class="btn btn-outline-success" type="button">Add customer/supplier</a>
+                        <p></p>
+                        {{ cost_form.cost_description|as_crispy_field }}
+                        {{ cost_form.payment_date|as_crispy_field }}
+                    </fieldset>
+                </div>
+            </div>
+            <div class="card border-0 shadow mb-4">
+                <div class="card-body">
+                    <fieldset class="form-group">
+                        <legend class="border-bottom mb-4">If you already have invoice, fill form below</legend>
+                        {{ invoice_form | crispy }}
+                    </fieldset>
+                </div>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="submit">Add Cost</button>
+            </div>
+        </form>
+    </div>
 {% endblock %}
