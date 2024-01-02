@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Company(models.Model):
@@ -59,17 +60,19 @@ class Invoice(models.Model):
         (KORONA, "CZK")
     ]
 
+    PERCENTAGE_VALIDATOR = [MinValueValidator(0), MaxValueValidator(100)]
+
     date = models.DateField()
     number = models.CharField(max_length=50)
     proforma = models.BooleanField(default=False)
     due_date = models.DateField()
-    currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, default=ZLOTY)
+    currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES)
     gross_amount = models.DecimalField(max_digits=10, decimal_places=2)
     net_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    pln_gross_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    pln_net_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    vat_rate = models.IntegerField()
-    file = models.FileField(null=True)
+    pln_gross_amount = models.DecimalField(null=True, max_digits=10, decimal_places=2)
+    pln_net_amount = models.DecimalField(null=True, max_digits=10, decimal_places=2)
+    vat_rate = models.DecimalField(max_digits=3, decimal_places=0, default=0, validators=PERCENTAGE_VALIDATOR)
+    file = models.FileField(null=True, upload_to='invoices')
     printed = models.BooleanField(default=False)
     in_optima = models.BooleanField(default=False)
 
@@ -80,14 +83,15 @@ class Cost(models.Model):
     customer = models.ForeignKey(Company, on_delete=models.DO_NOTHING, related_name='customer_costs') # company.costs.all()
     supplier = models.ForeignKey(Company, on_delete=models.DO_NOTHING, related_name='supplier_costs')
     cost_description = models.TextField()
-    invoice = models.OneToOneField(Invoice, blank=True, null=True, on_delete=models.DO_NOTHING)
+    estimated_cost = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    invoice = models.OneToOneField(Invoice, blank=True, null=True, on_delete=models.DO_NOTHING, related_name='invoice_cost')
     paid = models.BooleanField(default=False)
-    payment_date = models.DateField()
+    payment_date = models.DateField(blank=True, null=True)
     asap = models.BooleanField(default=False)
     urgent = models.BooleanField(default=False)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        self.uid = f"{self.id}_{self.created_date}_{self.customer.symbol}"
+        # self.uid = f"{self.id}_{self.created_date}_{self.customer.symbol}"
         if self.payment_date:
             self.paid = True
         super().save(force_insert, force_update, using, update_fields)
