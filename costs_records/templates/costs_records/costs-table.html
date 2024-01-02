@@ -13,6 +13,7 @@
                             <th class="border-0">CUSTOMER</th>
                             <th class="border-0">SUPPLIER</th>
                             <th class="border-0">COST DESCRIPTION</th>
+                            <th class="border-0">ESTIMATED COST</th>
                             <th class="border-0">INVOICE NUMBER</th>
                             <th class="border-0">GROSS PLN</th>
                             <th class="border-0">NET PLN</th>
@@ -27,11 +28,16 @@
                         {% for cost in costs %}
                         <tr>
                             <td> {{ cost.id }}</td>
-                            <td> {{ cost.uid }}</td>
+                            <td class="border-0">
+                                        <a href="{% url 'cost-detail' cost.id %}" class="d-flex align-items-center">
+                                            <div><span class="h6">{{ cost.uid }}</span></div>
+                                        </a>
+                            </td>
                             <td> {{ cost.created_date }}</td>
                             <td> {{ cost.customer.name }}</td>
                             <td> {{ cost.supplier.name }}</td>
                             <td> {{ cost.cost_description }}</td>
+                            <td> {{ cost.estimated_cost }}</td>
                             <td> {{ cost.invoice.number }}</td>
                             <td> {{ cost.invoice.pln_gross_amount }}</td>
                             <td> {{ cost.invoice.pln_net_amount }}</td>
