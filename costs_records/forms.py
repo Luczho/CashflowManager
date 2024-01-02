@@ -1,24 +1,24 @@
 from django import forms
-from django.contrib.admin.widgets import AdminDateWidget
+from bootstrap_datepicker_plus.widgets import DatePickerInput
 from django.forms.fields import DateField
 from .models import Company, Address, BankAccount, Invoice, ExchangeRate, Cost
 
 
 class CostForm(forms.ModelForm):
-
-    payment_date = forms.DateField(widget=forms.SelectDateWidget)
+    payment_date = forms.DateField(widget=DatePickerInput(), required=False)
 
     class Meta:
         model = Cost
-        fields = ['customer', 'supplier', 'cost_description', 'payment_date']
+        fields = ['customer', 'supplier', 'cost_description', 'estimated_cost', 'payment_date']
+        # widgets = {
+        #     'payment_date': DatePickerInput(),
+        # }
 
     def __init__(self, *args, **kwargs):
         super(CostForm, self).__init__(*args, **kwargs)
 
-        self.fields['payment_date'].required = False
         self.fields['customer'].queryset = Company.objects.filter(is_contractor=False)
         self.fields['supplier'].queryset = Company.objects.filter(is_contractor=True)
-
 
 
 class CompanyForm(forms.ModelForm):
@@ -31,6 +31,7 @@ class AddressForm(forms.ModelForm):
     class Meta:
         model = Address
         fields = '__all__'
+        exclude = ['company']
 
 
 class BankAccountForm(forms.ModelForm):
@@ -40,13 +41,12 @@ class BankAccountForm(forms.ModelForm):
 
 
 class InvoiceForm(forms.ModelForm):
-    date = forms.DateField(widget=forms.SelectDateWidget)
-    due_date = forms.DateField(widget=forms.SelectDateWidget)
+    date = forms.DateField(widget=DatePickerInput(), required=False)
+    due_date = forms.DateField(widget=forms.SelectDateWidget, required=False)
 
     class Meta:
         model = Invoice
-        fields = ['date', 'number', 'proforma', 'due_date', 'currency', 'gross_amount', 'net_amount', 'vat_rate',
-                  'file', 'printed', 'in_optima']
+        fields = "__all__"
 
     def __init__(self, *args, **kwargs):
         super(InvoiceForm, self).__init__(*args, **kwargs)
@@ -54,7 +54,12 @@ class InvoiceForm(forms.ModelForm):
         for field in self.fields:
             self.fields[field].required = False
 
-        # self.fields['date'].required = False
+    # def save(self, commit=True):
+    #
+    #     if any(field for field in self.fields if field is not None):
+    #         self.instance.save()
+    #
+    #     super(InvoiceForm, self).save()
 
             #
             # any(for field in forms.fields if fields is not None):
