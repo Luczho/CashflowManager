@@ -2,6 +2,7 @@
 {% load crispy_forms_tags %}
 {% block content %}
     <div class="content-section">
+    {{ cost_form.media }}
         <form method="POST">
             {% csrf_token %}
             <div class="card border-0 shadow mb-4">
@@ -12,6 +13,7 @@
                         {{ cost_form.supplier|as_crispy_field }}
                         <a href="{% url 'add-company' %}" class="btn btn-outline-success" type="button">Add customer/supplier</a>
                         <p></p>
+                        {{ cost_form.estimated_cost|as_crispy_field }}
                         {{ cost_form.cost_description|as_crispy_field }}
                         {{ cost_form.payment_date|as_crispy_field }}
                     </fieldset>
