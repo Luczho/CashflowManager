@@ -5,18 +5,21 @@ from .models import Company, Address, BankAccount, Invoice, ExchangeRate, Cost
 
 
 class CostForm(forms.ModelForm):
-    payment_date = forms.DateField(widget=DatePickerInput(), required=False)
+    # payment_date = forms.DateField(widget=DatePickerInput(), required=False)
 
     class Meta:
         model = Cost
-        fields = ['customer', 'supplier', 'cost_description', 'estimated_cost', 'payment_date']
-        # widgets = {
-        #     'payment_date': DatePickerInput(),
-        # }
+        fields = ['category', 'customer', 'supplier', 'cost_description', 'estimated_cost', 'payment_date', 'asap', 'urgent']
+        widgets = {
+            'payment_date': forms.widgets.DateInput(attrs={'type': 'date'})
+        }
 
     def __init__(self, *args, **kwargs):
         super(CostForm, self).__init__(*args, **kwargs)
 
+        self.fields['payment_date'].required = False
+        self.fields['asap'].required = False
+        self.fields['urgent'].required = False
         self.fields['customer'].queryset = Company.objects.filter(is_contractor=False)
         self.fields['supplier'].queryset = Company.objects.filter(is_contractor=True)
 
@@ -41,26 +44,19 @@ class BankAccountForm(forms.ModelForm):
 
 
 class InvoiceForm(forms.ModelForm):
-    date = forms.DateField(widget=DatePickerInput(), required=False)
-    due_date = forms.DateField(widget=forms.SelectDateWidget, required=False)
+    # date = forms.DateField(widget=DatePickerInput(), required=False)
+    # due_date = forms.DateField(widget=DatePickerInput(), required=False)
 
     class Meta:
         model = Invoice
         fields = "__all__"
+        widgets = {
+            'date': forms.widgets.DateInput(attrs={'type': 'date'}),
+            'due_date': forms.widgets.DateInput(attrs={'type': 'date'})
+        }
 
     def __init__(self, *args, **kwargs):
         super(InvoiceForm, self).__init__(*args, **kwargs)
 
         for field in self.fields:
             self.fields[field].required = False
-
-    # def save(self, commit=True):
-    #
-    #     if any(field for field in self.fields if field is not None):
-    #         self.instance.save()
-    #
-    #     super(InvoiceForm, self).save()
-
-            #
-            # any(for field in forms.fields if fields is not None):
-            #     ... form.save()
