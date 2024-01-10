@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
-from django.views.generic import ListView, CreateView, TemplateView, FormView, DetailView
-from .models import Cost, Company, Address
+from django.views.generic import ListView, CreateView, TemplateView, FormView, DetailView, UpdateView
+from django.views.generic.detail import SingleObjectMixin
+from .models import Cost, Company, Address, Invoice
 from .forms import CostForm, InvoiceForm, CompanyForm, AddressForm
 from django.urls import reverse_lazy
+from django.contrib import messages
 
 
 def about(request):
@@ -20,16 +22,19 @@ class CostListView(ListView):
         return context
 
 
-class AddCostView(TemplateView):
+class AsapCostListView(ListView):
+    model = Cost
+    template_name = 'costs_records/costs-table-asap.html'
+    context_object_name = 'costs'
 
-    template_name = 'costs_records/add-cost-form.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['cost_form'] = CostForm(prefix='cost')
-        context['invoice_form'] = InvoiceForm(prefix='invoice')
+class UrgentCostListView(ListView):
+    model = Cost
+    template_name = 'costs_records/costs-table-urgent.html'
+    context_object_name = 'costs'
 
-        return context
+
+class InvoiceMixin:
 
     def check_if_invoice_form_is_empty(self, invoice_form) -> bool:
         none_fields = ('date', 'due_date', 'gross_amount', 'net_amount')
@@ -44,7 +49,13 @@ class AddCostView(TemplateView):
 
         return True
 
+
+class AddCostView(TemplateView, InvoiceMixin):
+
+    template_name = 'costs_records/add-cost-form.html'
+
     def post(self, request, *args, **kwargs):
+
         invoice_form = InvoiceForm(self.request.POST, self.request.FILES, prefix='invoice')
         cost_form = CostForm(self.request.POST, self.request.FILES, prefix='cost')
         if all([cost_form.is_valid(), invoice_form.is_valid()]):
@@ -52,19 +63,91 @@ class AddCostView(TemplateView):
             cost.uid = f"{cost.id}_{cost.created_date}_{cost.customer.symbol}"
             if not self.check_if_invoice_form_is_empty(invoice_form):
                 invoice = invoice_form.save()
-                # cost = cost_form.save(commit=False)
                 cost.invoice = invoice
-                # cost.uid = f"{cost.id}_{cost.created_date}_{cost.customer.symbol}"
                 cost.save()
             else:
-                # cost = cost_form.save()
-                # cost.uid = f"{cost.id}_{cost.created_date}_{cost.customer.symbol}"
                 cost.save()
+        else:
+            messages.error('Something went wrong. Please try again.')
+
+        return redirect('costs-list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cost_form'] = CostForm(prefix='cost')
+        context['invoice_form'] = InvoiceForm(prefix='invoice')
+
+        return context
 
 
-            return redirect('costs-list')
+class UpdateCostView(InvoiceMixin, UpdateView):
 
-        # return super().post(request, *args, **kwargs)
+    model = Cost
+    template_name = 'costs_records/add-cost-form.html'
+    fields = "__all__"
+
+    def get_object(self, queryset=None):
+        pk = self.kwargs.get(self.pk_url_kwarg)
+        obj = Cost.objects.get(pk=pk)
+        return obj
+
+    def post(self, request, *args, **kwargs):
+        cost_object = self.get_object()
+        invoice_object = cost_object.invoice
+        invoice_form = InvoiceForm(self.request.POST, self.request.FILES, prefix='invoice')
+        cost_form = CostForm(self.request.POST, self.request.FILES, prefix='cost')
+        if all([cost_form.is_valid(), invoice_form.is_valid()]):
+            for form_field in cost_form.cleaned_data.keys():
+                cost_object.__setattr__(form_field, cost_form.cleaned_data[form_field])
+            cost_object.uid = f"{cost_object.id}_{cost_object.created_date}_{cost_object.customer.symbol}"
+            if not self.check_if_invoice_form_is_empty(invoice_form):
+                for form_field in invoice_form.cleaned_data.keys():
+                    if invoice_object:
+                        invoice_object.__setattr__(form_field, invoice_form.cleaned_data[form_field])
+                        invoice_object.save()
+                    else:
+                        invoice_new_obj = invoice_form.save()
+                        cost_object.invoice = invoice_new_obj
+
+                cost_object.invoice = invoice_object
+                cost_object.save()
+            else:
+                cost_object.save()
+        else:
+            messages.error(request, "Something went wrong. Please try again.")
+
+        return redirect('costs-list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cost_form'] = CostForm(prefix='cost', initial=self.get_initial())
+        context['invoice_form'] = InvoiceForm(prefix='invoice', initial=self.get_initial())
+
+        return context
+
+    def get_initial(self):
+        initial = super(UpdateCostView, self).get_initial()
+        cost_object = self.object
+        invoice_object = Invoice.objects.filter(invoice_cost=cost_object.id).first()
+        initial.update({'customer': cost_object.customer, 'cost_description': cost_object.cost_description,
+                       'supplier': cost_object.supplier, 'estimated_cost': cost_object.estimated_cost,
+                        'payment_date': cost_object.payment_date, 'asap': cost_object.asap, 'urgent': cost_object.urgent})
+        if invoice_object:
+            fields = ['date', 'number', 'proforma', 'due_date', 'currency', 'gross_amount', 'net_amount',
+                      'pln_gross_amount', 'pln_net_amount', 'vat_rate', 'file', 'printed', 'in_optima']
+
+            dct = {field: getattr(invoice_object, field) for field in fields if getattr(invoice_object, field)}
+            initial.update(dct)
+            # initial.update({'date': invoice_object.date,
+            #                 'number': invoice_object.number, 'proforma': invoice_object.proforma,
+            #                 'due_date': invoice_object.due_date, 'currency': invoice_object.currency,
+            #                 'gross_amount': invoice_object.gross_amount, 'net_amount': invoice_object.net_amount,
+            #                 'pln_gross_amount': invoice_object.pln_gross_amount,
+            #                 'pln_net_amount': invoice_object.pln_net_amount, 'vat_rate': invoice_object.vat_rate,
+            #                 'file': invoice_object.file, 'printed': invoice_object.printed,
+            #                 'in_optima': invoice_object.in_optima})
+        #
+        return initial
 
 
 class AddCompanyView(TemplateView):
