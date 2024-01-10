@@ -1,14 +1,15 @@
 {% extends 'costs_records/base.html' %}
 {% load crispy_forms_tags %}
 {% block content %}
-    <div class="content-section">
     {{ cost_form.media }}
+    <div class="content-section">
         <form method="POST">
             {% csrf_token %}
             <div class="card border-0 shadow mb-4">
                 <div class="card-body">
                     <fieldset class="form-group">
                         <legend class="border-bottom mb-4">New Cost</legend>
+                        {{ cost_form.category|as_crispy_field }}
                         {{ cost_form.customer|as_crispy_field }}
                         {{ cost_form.supplier|as_crispy_field }}
                         <a href="{% url 'add-company' %}" class="btn btn-outline-success" type="button">Add customer/supplier</a>
@@ -16,6 +17,8 @@
                         {{ cost_form.estimated_cost|as_crispy_field }}
                         {{ cost_form.cost_description|as_crispy_field }}
                         {{ cost_form.payment_date|as_crispy_field }}
+                        {{ cost_form.asap|as_crispy_field }}
+                        {{ cost_form.urgent|as_crispy_field }}
                     </fieldset>
                 </div>
             </div>
@@ -28,7 +31,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <button class="btn btn-outline-info" type="submit">Add Cost</button>
+                <button class="btn btn-outline-info" type="submit">Save Cost</button>
             </div>
         </form>
     </div>
