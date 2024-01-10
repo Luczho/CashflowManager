@@ -1,7 +1,5 @@
 {% load static %}
 
-<script type="text/javascript" src="{% static 'js/jquery.js' %}">
-</script>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -52,6 +50,7 @@
 <!-- Volt CSS -->
 <link type="text/css" href="{% static '/assets/css/volt.css' %}" rel="stylesheet">
 
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 <!-- NOTICE: You can use the _analytics.html partial to include production code specific code & trackers -->
 
 <!-- Specific Page JS goes HERE  -->
@@ -66,6 +65,14 @@
         <main class="content">
 
             {% include 'costs_records/navigation.html' %}
+
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
 
             {% block content %}{% endblock %}
 
