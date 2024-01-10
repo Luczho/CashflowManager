@@ -9,6 +9,7 @@
                         <tr>
                             <th class="border-0 rounded-start">ID</th>
                             <th class="border-0">UDI</th>
+                            <th class="border-0">CATEGORY</th>
                             <th class="border-0">CREATED DATE</th>
                             <th class="border-0">CUSTOMER</th>
                             <th class="border-0">SUPPLIER</th>
@@ -17,22 +18,26 @@
                             <th class="border-0">INVOICE NUMBER</th>
                             <th class="border-0">GROSS PLN</th>
                             <th class="border-0">NET PLN</th>
+                            <th class="border-0">DUE DATE</th>
                             <th class="border-0">PAID</th>
-                            <th class="border-0">PAYMENT DATE</th>
-                            <th class="border-0">ASAP</th>
-                            <th class="border-0 rounded-end">URGENT</th>
+                            <th class="border-0 rounded-end">PAYMENT DATE</th>
                         </tr>
                     </thead>
                     <tbody>
                         <!-- Item -->
                         {% for cost in costs %}
                         <tr>
-                            <td> {{ cost.id }}</td>
+                            <td class="border-0">
+                                        <a href="{% url 'cost-detail' cost.id %}" class="d-flex align-items-center">
+                                            <div><span class="h6">{{ cost.id }}</span></div>
+                                        </a>
+                            </td>
                             <td class="border-0">
                                         <a href="{% url 'cost-detail' cost.id %}" class="d-flex align-items-center">
                                             <div><span class="h6">{{ cost.uid }}</span></div>
                                         </a>
                             </td>
+                            <td> {{ cost.category }}</td>
                             <td> {{ cost.created_date }}</td>
                             <td> {{ cost.customer.name }}</td>
                             <td> {{ cost.supplier.name }}</td>
@@ -41,10 +46,9 @@
                             <td> {{ cost.invoice.number }}</td>
                             <td> {{ cost.invoice.pln_gross_amount }}</td>
                             <td> {{ cost.invoice.pln_net_amount }}</td>
+                            <td> {{ cost.invoice.due_date }}</td>
                             <td> {{ cost.paid }}</td>
                             <td> {{ cost.payment_date }}</td>
-                            <td> {{ cost.asap }}</td>
-                            <td> {{ cost.urgent }}</td>
                         <!-- End of Item -->
                         </tr>
                         {% endfor %}
