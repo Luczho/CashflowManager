@@ -78,17 +78,25 @@ class Invoice(models.Model):
 
 
 class Cost(models.Model):
+    CATEGORY_CHOICES = [
+        ("OPERATION", "OPERATION"),
+        ("MEDIA", "MEDIA"),
+        ("PRODUCTION", "PRODUCTION")
+    ]
+
     uid = models.CharField(max_length=50, help_text='unique id of the cost id_created_date_company_symbol ex. 1_2020-01-01_NUT')
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, null=True, blank=True)
     created_date = models.DateField(auto_now_add=True)
-    customer = models.ForeignKey(Company, on_delete=models.DO_NOTHING, related_name='customer_costs') # company.costs.all()
+    customer = models.ForeignKey(Company, on_delete=models.DO_NOTHING, related_name='customer_costs')
     supplier = models.ForeignKey(Company, on_delete=models.DO_NOTHING, related_name='supplier_costs')
     cost_description = models.TextField()
     estimated_cost = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    invoice = models.OneToOneField(Invoice, blank=True, null=True, on_delete=models.DO_NOTHING, related_name='invoice_cost')
+    invoice = models.OneToOneField(Invoice, blank=True, null=True, on_delete=models.DO_NOTHING, related_name='invoice_cost') # -> rename to only cost.
     paid = models.BooleanField(default=False)
     payment_date = models.DateField(blank=True, null=True)
     asap = models.BooleanField(default=False)
     urgent = models.BooleanField(default=False)
+
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         # self.uid = f"{self.id}_{self.created_date}_{self.customer.symbol}"
