@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'costs_records',
     'crispy_forms',
     'crispy_bootstrap5',
+    'bootstrap4',
     'bootstrap_datepicker_plus',
     'jquery',
     'django.contrib.admin',
