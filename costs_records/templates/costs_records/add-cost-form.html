@@ -9,14 +9,34 @@
                 <div class="card-body">
                     <fieldset class="form-group">
                         <legend class="border-bottom mb-4">New Cost</legend>
-                        {{ cost_form.category|as_crispy_field }}
-                        {{ cost_form.customer|as_crispy_field }}
-                        {{ cost_form.supplier|as_crispy_field }}
+                        <div class="row">
+                            <div class="col-md-2 mb-3">
+                                {{ cost_form.category|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                {{ cost_form.customer|as_crispy_field }}
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                {{ cost_form.supplier|as_crispy_field }}
+                            </div>
+                        </div>
                         <a href="{% url 'add-company' %}" class="btn btn-outline-success" type="button">Add customer/supplier</a>
                         <p></p>
-                        {{ cost_form.estimated_cost|as_crispy_field }}
-                        {{ cost_form.cost_description|as_crispy_field }}
-                        {{ cost_form.payment_date|as_crispy_field }}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ cost_form.cost_description|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                {{ cost_form.estimated_cost|as_crispy_field }}
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                {{ cost_form.payment_date|as_crispy_field }}
+                            </div>
+                        </div>
                         {{ cost_form.asap|as_crispy_field }}
                         {{ cost_form.urgent|as_crispy_field }}
                     </fieldset>
@@ -24,15 +44,57 @@
             </div>
             <div class="card border-0 shadow mb-4">
                 <div class="card-body">
-                    <fieldset class="form-group">
-                        <legend class="border-bottom mb-4">If you already have invoice, fill form below</legend>
-                        {{ invoice_form | crispy }}
-                    </fieldset>
-                </div>
+                    <legend class="border-bottom mb-4">If you already have invoice, fill form below</legend>
+                    <div class="row">
+                        <div class="col-md-2 mb-3">
+                            {{ invoice_form.date|as_crispy_field }}
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            {{ invoice_form.number|as_crispy_field }}
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            {{ invoice_form.due_date|as_crispy_field }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        {{ invoice_form.proforma|as_crispy_field }}
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            {{ invoice_form.vat_rate|as_crispy_field }}
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            {{ invoice_form.currency|as_crispy_field }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            {{ invoice_form.net_amount|as_crispy_field }}
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            {{ invoice_form.gross_amount|as_crispy_field }}
+                        </div>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            {{ invoice_form.pln_net_amount|as_crispy_field }}
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            {{ invoice_form.pln_gross_amount|as_crispy_field }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                           {{ invoice_form.file|as_crispy_field }}
+                        </div>
+                    </div>
+                        {{ invoice_form.in_optima|as_crispy_field }}
+                        {{ invoice_form.printed|as_crispy_field }}
+                    </div>
             </div>
             <div class="form-group">
                 <button class="btn btn-outline-info" type="submit">Save Cost</button>
             </div>
+            <p></p>
         </form>
     </div>
 {% endblock %}
