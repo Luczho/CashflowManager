@@ -8,13 +8,21 @@
             <a href="{% url 'update-cost' pk=object.pk %}" class="btn btn-outline-success" type="button">Update Cost</a>
             <p></p>
             <div class="row">
-                <div class="col-md-6 mb-3">
+                <div class="col-md-3 mb-3">
+                    <div>
+                        <label for="category">Category</label>
+                        <input class="form-control" id="category" type="text" placeholder="{{ object.category }}" readonly>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 mb-3">
                     <div>
                         <label for="first_name">Cost Unique Id</label>
                         <input class="form-control" id="first_name" type="text" placeholder="{{ object.uid}}" readonly>
                     </div>
                 </div>
-                <div class="col-md-6 mb-3">
+                <div class="col-md-3 mb-3">
                     <div>
                         <label for="last_name">Created Date</label>
                         <input class="form-control" id="last_name" type="text" placeholder="{{ object.created_date }}" readonly>
@@ -22,13 +30,13 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-6 mb-3">
+                <div class="col-md-3 mb-3">
                     <div>
-                        <label for="first_name">Customer Name</label>
-                        <input class="form-control" id="first_name" type="text" placeholder="{{ object.customer.name}}" readonly>
+                        <label for="customer_name">Customer Name</label>
+                        <input class="form-control" id="customer_name" type="text" placeholder="{{ object.customer.name}}" readonly>
                     </div>
                 </div>
-                <div class="col-md-6 mb-3">
+                <div class="col-md-3 mb-3">
                     <div>
                         <label for="last_name">Supplier Name</label>
                         <input class="form-control" id="last_name" type="text" placeholder="{{ object.supplier.name }}" readonly>
@@ -36,7 +44,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-12 mb-3">
+                <div class="col-md-6 mb-3">
                     <div>
                         <label for="last_name">Cost Description</label>
                         <input class="form-control" id="last_name" type="text" placeholder="{{ object.cost_description }}" readonly>
@@ -44,19 +52,19 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-4 mb-3">
+                <div class="col-md-2 mb-3">
                     <div>
                         <label for="last_name">Estimated Cost</label>
                         <input class="form-control" id="last_name" type="text" placeholder="{{ object.estimated_cost }}" readonly>
                     </div>
                 </div>
-                <div class="col-md-4 mb-3">
+                <div class="col-md-2 mb-3">
                     <div>
                         <label for="last_name">Is Paid</label>
                         <input class="form-control" id="last_name" type="text" placeholder="{{ object.paid }}" readonly>
                     </div>
                 </div>
-                <div class="col-md-4 mb-3">
+                <div class="col-md-2 mb-3">
                     <div>
                         <label for="last_name">Payment Date</label>
                         <input class="form-control" id="last_name" type="text" placeholder="{{ object.payment_date }}" readonly>
@@ -70,13 +78,13 @@
         <div class="card-body">
             <h2><a class="article-title" href="#">Invoice Detail</a></h2>
             <div class="row">
-                <div class="col-md-6 mb-3">
+                <div class="col-md-3 mb-3">
                     <div>
                         <label for="first_name">Invoice Number</label>
                         <input class="form-control" id="first_name" type="text" placeholder="{{ object.invoice.number}}" readonly>
                     </div>
                 </div>
-                <div class="col-md-6 mb-3">
+                <div class="col-md-3 mb-3">
                     <div>
                         <label for="last_name">Invoice Date</label>
                         <input class="form-control" id="last_name" type="text" placeholder="{{ object.invoice.date }}" readonly>
@@ -84,25 +92,25 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-3 mb-3">
+                <div class="col-md-2 mb-3">
                     <div>
                         <label for="first_name">Nett Amount</label>
                         <input class="form-control" id="first_name" type="text" placeholder="{{ object.invoice.net_amount}}" readonly>
                     </div>
                 </div>
-                <div class="col-md-3 mb-3">
+                <div class="col-md-2 mb-3">
                     <div>
                         <label for="last_name">Gross Amount</label>
                         <input class="form-control" id="last_name" type="text" placeholder="{{ object.invoice.gross_amount }}" readonly>
                     </div>
                 </div>
-                <div class="col-md-3 mb-3">
+                <div class="col-md-1 mb-3">
                     <div>
                         <label for="last_name">VAT Rate</label>
                         <input class="form-control" id="last_name" type="text" placeholder="{{ object.invoice.vat_rate }}" readonly>
                     </div>
                 </div>
-                <div class="col-md-3 mb-3">
+                <div class="col-md-1 mb-3">
                     <div>
                         <label for="last_name">Currency</label>
                         <input class="form-control" id="last_name" type="text" placeholder="{{ object.invoice.currency }}" readonly>
