@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect
-from django.views.generic import ListView, CreateView, TemplateView, FormView, DetailView, UpdateView
+from django.views.generic import ListView, CreateView, TemplateView, FormView, DetailView, UpdateView, View
+from django.views.generic.edit import BaseUpdateView, ProcessFormView
+from django_filters.views import FilterView
 from django.views.generic.detail import SingleObjectMixin
 from .models import Cost, Company, Address, Invoice
 from .forms import CostForm, InvoiceForm, CompanyForm, AddressForm
-from django.urls import reverse_lazy
+from .filters import CostFilter
 from django.contrib import messages
 
 
@@ -19,7 +21,29 @@ class CostListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['cost_fields'] = Cost._meta.get_fields()
+        context['total_ga'], context['total_na'], context['total_pga'], context['total_pna'], context['total_est']\
+            = self.total_amounts()
         return context
+
+    def total_amounts(self):
+
+        invoices = Invoice.objects.filter(cost__isnull=False)
+        costs = Cost.objects.all()
+        total_ga = 0
+        total_na = 0
+        total_pga = 0
+        total_pna = 0
+        total_est = 0
+        for invoice in invoices:
+            total_ga += invoice.gross_amount
+            total_na += invoice.net_amount
+            if invoice.pln_net_amount and invoice.pln_net_amount:
+                total_pga += invoice.pln_gross_amount
+                total_pna += invoice.pln_net_amount
+        for cost in costs:
+            if cost.estimated_cost:
+                total_est += cost.estimated_cost
+        return total_ga, total_na, total_pga, total_pna, total_est
 
 
 class AsapCostListView(ListView):
@@ -32,6 +56,12 @@ class UrgentCostListView(ListView):
     model = Cost
     template_name = 'costs_records/costs-table-urgent.html'
     context_object_name = 'costs'
+
+
+class InvoiceListView(ListView):
+    model = Invoice
+    template_name = 'costs_records/invoices-table.html'
+    context_object_name = 'invoices'
 
 
 class InvoiceMixin:
@@ -101,14 +131,12 @@ class UpdateCostView(InvoiceMixin, UpdateView):
                 cost_object.__setattr__(form_field, cost_form.cleaned_data[form_field])
             cost_object.uid = f"{cost_object.id}_{cost_object.created_date}_{cost_object.customer.symbol}"
             if not self.check_if_invoice_form_is_empty(invoice_form):
-                for form_field in invoice_form.cleaned_data.keys():
-                    if invoice_object:
+                if invoice_object:
+                    for form_field in invoice_form.cleaned_data.keys():
                         invoice_object.__setattr__(form_field, invoice_form.cleaned_data[form_field])
-                        invoice_object.save()
-                    else:
-                        invoice_new_obj = invoice_form.save()
-                        cost_object.invoice = invoice_new_obj
-
+                    invoice_object.save()
+                else:
+                    invoice_object = invoice_form.save()
                 cost_object.invoice = invoice_object
                 cost_object.save()
             else:
@@ -128,7 +156,8 @@ class UpdateCostView(InvoiceMixin, UpdateView):
     def get_initial(self):
         initial = super(UpdateCostView, self).get_initial()
         cost_object = self.object
-        invoice_object = Invoice.objects.filter(invoice_cost=cost_object.id).first()
+        invoice_object = cost_object.invoice
+        # to refactor like update in invoice_object
         initial.update({'customer': cost_object.customer, 'cost_description': cost_object.cost_description,
                        'supplier': cost_object.supplier, 'estimated_cost': cost_object.estimated_cost,
                         'payment_date': cost_object.payment_date, 'asap': cost_object.asap, 'urgent': cost_object.urgent})
@@ -148,6 +177,23 @@ class UpdateCostView(InvoiceMixin, UpdateView):
             #                 'in_optima': invoice_object.in_optima})
         #
         return initial
+
+
+class AsapUpdateCostView(View):
+    model = Cost
+    fields = ['asap']
+
+    def get_object(self, queryset=None):
+        pk = self.kwargs.get('pk')
+        obj = Cost.objects.get(pk=pk)
+        return obj
+
+    def post(self, request, *args, **kwargs):
+        cost_object = self.get_object()
+        cost_object.asap = True
+        cost_object.save()
+        return redirect('costs-list')
+
 
 
 class AddCompanyView(TemplateView):
@@ -177,4 +223,18 @@ class AddCompanyView(TemplateView):
 class CostDetailView(DetailView):
     model = Cost
     template_name = 'costs_records/cost-detail.html'
+
+
+class CostFilterView(FilterView):
+
+    filterset_class = CostFilter
+    model = Cost
+
+    template_name = 'costs_records/costs-table_filter.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter'] = CostFilter(self.request.GET, queryset=self.get_queryset())
+
+        return context
 
