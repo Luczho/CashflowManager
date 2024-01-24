@@ -7,7 +7,8 @@
                 <table class="table table-centered table-nowrap mb-0 rounded">
                     <thead class="thead-light">
                         <tr>
-                            <th class="border-0 rounded-start">ID</th>
+                            <th class="border-0 rounded-start">ASAP</th>
+                            <th class="border-0">ID</th>
                             <th class="border-0">UDI</th>
                             <th class="border-0">CATEGORY</th>
                             <th class="border-0">CREATED DATE</th>
@@ -16,17 +17,31 @@
                             <th class="border-0">COST DESCRIPTION</th>
                             <th class="border-0">ESTIMATED COST</th>
                             <th class="border-0">INVOICE NUMBER</th>
+                            <th class="border-0">CURRENCY</th>
+                            <th class="border-0">GROSS AMOUNT</th>
+                            <th class="border-0">NET AMOUNT</th>
                             <th class="border-0">GROSS PLN</th>
                             <th class="border-0">NET PLN</th>
                             <th class="border-0">DUE DATE</th>
                             <th class="border-0">PAID</th>
-                            <th class="border-0 rounded-end">PAYMENT DATE</th>
+                            <th class="border-0">PAYMENT DATE</th>
+                            <th class="border-0 rounded-end">ASAP</th>
                         </tr>
                     </thead>
                     <tbody>
                         <!-- Item -->
                         {% for cost in costs %}
                         <tr>
+                            <td>
+                                {% if not cost.asap %}
+                                    <form method="post" action={% url 'update-cost-asap' cost.id %}>
+                                        {% csrf_token %}
+                                        <button class="btn btn-outline-success" type="submit">ASAP</button>
+                                    </form>
+                                {% else %}
+                                    <button class="btn btn-gray-200" type="submit">ASAP</button>
+                                {% endif %}
+                            </td>
                             <td class="border-0">
                                         <a href="{% url 'cost-detail' cost.id %}" class="d-flex align-items-center">
                                             <div><span class="h6">{{ cost.id }}</span></div>
@@ -44,14 +59,34 @@
                             <td> {{ cost.cost_description }}</td>
                             <td> {{ cost.estimated_cost }}</td>
                             <td> {{ cost.invoice.number }}</td>
+                            <td> {{ cost.invoice.currency }}</td>
+                            <td> {{ cost.invoice.gross_amount }}</td>
+                            <td> {{ cost.invoice.net_amount }}</td>
                             <td> {{ cost.invoice.pln_gross_amount }}</td>
                             <td> {{ cost.invoice.pln_net_amount }}</td>
                             <td> {{ cost.invoice.due_date }}</td>
                             <td> {{ cost.paid }}</td>
                             <td> {{ cost.payment_date }}</td>
+                            <td> {{ cost.asap }}</td>
                         <!-- End of Item -->
                         </tr>
                         {% endfor %}
+                        <tr>
+                            <td>SUM</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>{{  total_est }}</td>
+                            <td></td>
+                            <td></td>
+                            <td>{{ total_ga }}</td>
+                            <td>{{ total_na }}</td>
+                            <td>{{ total_pga }}</td>
+                            <td>{{ total_pna }}</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
