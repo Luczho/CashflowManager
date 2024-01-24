@@ -76,6 +76,9 @@ class Invoice(models.Model):
     printed = models.BooleanField(default=False)
     in_optima = models.BooleanField(default=False)
 
+    def __str__(self):
+        return self.number
+
 
 class Cost(models.Model):
     CATEGORY_CHOICES = [
@@ -91,12 +94,11 @@ class Cost(models.Model):
     supplier = models.ForeignKey(Company, on_delete=models.DO_NOTHING, related_name='supplier_costs')
     cost_description = models.TextField()
     estimated_cost = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    invoice = models.OneToOneField(Invoice, blank=True, null=True, on_delete=models.DO_NOTHING, related_name='invoice_cost') # -> rename to only cost.
+    invoice = models.OneToOneField(Invoice, blank=True, null=True, on_delete=models.DO_NOTHING, related_name='cost')
     paid = models.BooleanField(default=False)
     payment_date = models.DateField(blank=True, null=True)
     asap = models.BooleanField(default=False)
     urgent = models.BooleanField(default=False)
-
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         # self.uid = f"{self.id}_{self.created_date}_{self.customer.symbol}"
