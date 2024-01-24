@@ -1,0 +1,33 @@
+{% extends 'costs_records/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="card border-0 shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-centered table-nowrap mb-0 rounded">
+                    <thead class="thead-light">
+                        <tr>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Item -->
+                        {% for invoice in invoices %}
+                        <tr>
+                            <td> {{ invoice.cost.uid }}</td>
+                            <td> {{ invoice.id }}</td>
+                            <td> {{ invoice.date }}</td>
+                            <td> {{ invoice.number }}</td>
+                            <td> {{ invoice.currency }}</td>
+                            <td> {{ invoice.gross_amount }}</td>
+                            <td> {{ invoice.net_amount }}</td>
+                            <td> {{ invoice.pln_gross_amount }}</td>
+                            <td> {{ invoice.pln_net_amount }}</td>
+                            <td> {{ invoice.vat_rate }}</td>
+                        <!-- End of Item -->
+                        </tr>
+                        {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
