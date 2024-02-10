@@ -3,7 +3,7 @@
 {% block content %}
     {{ cost_form.media }}
     <div class="content-section">
-        <form method="POST">
+        <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="card border-0 shadow mb-4">
                 <div class="card-body">
@@ -74,14 +74,6 @@
                         <div class="col-md-3 mb-3">
                             {{ invoice_form.gross_amount|as_crispy_field }}
                         </div>
-                    <div class="row">
-                        <div class="col-md-3 mb-3">
-                            {{ invoice_form.pln_net_amount|as_crispy_field }}
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            {{ invoice_form.pln_gross_amount|as_crispy_field }}
-                        </div>
-                    </div>
                     <div class="row">
                         <div class="col-md-3 mb-3">
                            {{ invoice_form.file|as_crispy_field }}
