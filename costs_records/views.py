@@ -1,12 +1,14 @@
+import datetime
+from datetime import timedelta
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, CreateView, TemplateView, FormView, DetailView, UpdateView, View
-from django.views.generic.edit import BaseUpdateView, ProcessFormView
 from django_filters.views import FilterView
-from django.views.generic.detail import SingleObjectMixin
-from .models import Cost, Company, Address, Invoice
+from .models import Cost, Company, Address, Invoice, ExchangeRate
 from .forms import CostForm, InvoiceForm, CompanyForm, AddressForm
 from .filters import CostFilter
 from django.contrib import messages
+from django.views.decorators.clickjacking import xframe_options_exempt
+from django.utils.decorators import method_decorator
 
 
 def about(request):
@@ -79,6 +81,37 @@ class InvoiceMixin:
 
         return True
 
+    def get_exchange_rate(self, date, currency, days_back) -> ExchangeRate:
+        for i in range(days_back):
+            try:
+                ex_rate = ExchangeRate.objects.get(date=date, currency=currency)
+                return ex_rate
+
+            except ExchangeRate.DoesNotExist:
+                date -= timedelta(days=1)
+
+        raise ExchangeRate.DoesNotExist(f"No exchange rate found for {currency} in the past {days_back} days.")
+
+    def calculate_pln_amounts(self, invoice, date=None) -> Invoice:
+        if invoice.currency != 'PLN':
+            if not date:
+                current_date = datetime.date.today()
+                date_string = current_date.strftime('%Y-%m-%d')
+                ex_rate = ExchangeRate.objects.get(date=date_string, currency=invoice.currency)
+                invoice.pln_net_amount = round(invoice.net_amount * ex_rate.rate, 2)
+                invoice.pln_gross_amount = round(invoice.gross_amount * ex_rate.rate, 2)
+                invoice.save()
+            else:
+                ex_rate = self.get_exchange_rate(date, invoice.currency, 7)
+                invoice.pln_net_amount = round(invoice.net_amount * ex_rate.rate, 2)
+                invoice.pln_gross_amount = round(invoice.gross_amount * ex_rate.rate, 2)
+                invoice.save()
+        else:
+            invoice.pln_net_amount = invoice.net_amount
+            invoice.pln_gross_amount = invoice.gross_amount
+
+        return invoice
+
 
 class AddCostView(TemplateView, InvoiceMixin):
 
@@ -93,6 +126,7 @@ class AddCostView(TemplateView, InvoiceMixin):
             cost.uid = f"{cost.id}_{cost.created_date}_{cost.customer.symbol}"
             if not self.check_if_invoice_form_is_empty(invoice_form):
                 invoice = invoice_form.save()
+                self.calculate_pln_amounts(invoice)
                 cost.invoice = invoice
                 cost.save()
             else:
@@ -100,7 +134,7 @@ class AddCostView(TemplateView, InvoiceMixin):
         else:
             messages.error('Something went wrong. Please try again.')
 
-        return redirect('costs-list')
+        return redirect('costs-list-filter')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -134,9 +168,11 @@ class UpdateCostView(InvoiceMixin, UpdateView):
                 if invoice_object:
                     for form_field in invoice_form.cleaned_data.keys():
                         invoice_object.__setattr__(form_field, invoice_form.cleaned_data[form_field])
+                    self.calculate_pln_amounts(invoice_object, cost_object.created_date)
                     invoice_object.save()
                 else:
                     invoice_object = invoice_form.save()
+                    self.calculate_pln_amounts(invoice_object, cost_object.created_date)
                 cost_object.invoice = invoice_object
                 cost_object.save()
             else:
@@ -220,6 +256,7 @@ class AddCompanyView(TemplateView):
         # return super().post(request, *args, **kwargs)
 
 
+@method_decorator(xframe_options_exempt, name='dispatch')
 class CostDetailView(DetailView):
     model = Cost
     template_name = 'costs_records/cost-detail.html'
@@ -235,6 +272,30 @@ class CostFilterView(FilterView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['filter'] = CostFilter(self.request.GET, queryset=self.get_queryset())
+        context['cost_fields'] = Cost._meta.get_fields()
+        context['total_ga'], context['total_na'], context['total_pga'], context['total_pna'], context['total_est'] \
+            = self.total_amounts()
 
         return context
+
+
+    def total_amounts(self):
+
+        invoices = Invoice.objects.filter(cost__isnull=False)
+        costs = Cost.objects.all()
+        total_ga = 0
+        total_na = 0
+        total_pga = 0
+        total_pna = 0
+        total_est = 0
+        for invoice in invoices:
+            total_ga += invoice.gross_amount
+            total_na += invoice.net_amount
+            if invoice.pln_net_amount and invoice.pln_net_amount:
+                total_pga += invoice.pln_gross_amount
+                total_pna += invoice.pln_net_amount
+        for cost in costs:
+            if cost.estimated_cost:
+                total_est += cost.estimated_cost
+        return total_ga, total_na, total_pga, total_pna, total_est
 
