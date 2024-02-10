@@ -18,7 +18,8 @@ class CostFilter(django_filters.FilterSet):
         fields=(
             ('id', 'id'),
             ('created_date', 'created_date'),
-            ('invoice__due_date', 'due_date'))
+            ('invoice__due_date', 'due_date'),
+            ('invoice__days_to_due_date', 'days_to_due_date'))
     )
 
     class Meta:
