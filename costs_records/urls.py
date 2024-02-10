@@ -1,7 +1,5 @@
 from django.urls import path
 from . import views
-from .models import Cost
-from django_filters.views import object_filter
 from .views import CostListView, AddCostView, AddCompanyView, CostDetailView, UpdateCostView, AsapCostListView,\
     UrgentCostListView, InvoiceListView, AsapUpdateCostView, CostFilterView
 
