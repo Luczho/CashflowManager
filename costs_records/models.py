@@ -44,8 +44,9 @@ class BankAccount(models.Model):
 
 
 class ExchangeRate(models.Model):
-    date = models.DateField(auto_now_add=True)
+    date = models.DateField()
     currency = models.CharField(max_length=5)
+    rate = models.DecimalField(max_digits=5, decimal_places=4, null=True)
 
 
 class Invoice(models.Model):
@@ -66,13 +67,14 @@ class Invoice(models.Model):
     number = models.CharField(max_length=50)
     proforma = models.BooleanField(default=False)
     due_date = models.DateField()
+    days_to_due_date = models.IntegerField(null=True)
     currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES)
     gross_amount = models.DecimalField(max_digits=10, decimal_places=2)
     net_amount = models.DecimalField(max_digits=10, decimal_places=2)
     pln_gross_amount = models.DecimalField(null=True, max_digits=10, decimal_places=2)
     pln_net_amount = models.DecimalField(null=True, max_digits=10, decimal_places=2)
     vat_rate = models.DecimalField(max_digits=3, decimal_places=0, default=0, validators=PERCENTAGE_VALIDATOR)
-    file = models.FileField(null=True, upload_to='invoices')
+    file = models.FileField(null=True, upload_to='invoices/')
     printed = models.BooleanField(default=False)
     in_optima = models.BooleanField(default=False)
 
