@@ -5,7 +5,6 @@ from .models import Company, Address, BankAccount, Invoice, ExchangeRate, Cost
 
 
 class CostForm(forms.ModelForm):
-    # payment_date = forms.DateField(widget=DatePickerInput(), required=False)
 
     class Meta:
         model = Cost
@@ -44,8 +43,6 @@ class BankAccountForm(forms.ModelForm):
 
 
 class InvoiceForm(forms.ModelForm):
-    # date = forms.DateField(widget=DatePickerInput(), required=False)
-    # due_date = forms.DateField(widget=DatePickerInput(), required=False)
 
     class Meta:
         model = Invoice
