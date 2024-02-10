@@ -34,8 +34,15 @@
                             {{ filter.form.paid | as_crispy_field }}
                         </div>
                     </div>
-                    <div class="form-group">
-                        <button class="btn btn-success" type="submit">Apply</button>
+                    <div class="row">
+                        <div class="col-md-1 mb-1">
+                            <div class="form-group">
+                                <button class="btn btn-success" type="submit">Apply</button>
+                            </div>
+                        </div>
+                        <div class="col-md-1 mb-1">
+                            <a href="{% url 'costs-list-filter' %}" class="btn btn-danger" type="button">Clear</a>
+                        </div>
                     </div>
                 </form>
             </fieldset>
@@ -49,11 +56,13 @@
                         <tr>
                             <th class="border-0 rounded-start">ASAP</th>
                             <th class="border-0">
-                                <a id="link1"> ID</a>
+                                <a id="id_link"> ID</a>
                             </th>
                             <th class="border-0">UDI</th>
                             <th class="border-0">CATEGORY</th>
-                            <th class="border-0">CREATED DATE</th>
+                            <th class="border-0">
+                                <a id="created_date_link"> CREATED DATE</a>
+                            </th>
                             <th class="border-0">CUSTOMER</th>
                             <th class="border-0">SUPPLIER</th>
                             <th class="border-0">COST DESCRIPTION</th>
@@ -64,7 +73,12 @@
                             <th class="border-0">NET AMOUNT</th>
                             <th class="border-0">GROSS PLN</th>
                             <th class="border-0">NET PLN</th>
-                            <th class="border-0">DUE DATE</th>
+                            <th class="border-0">
+                                <a id="due_date_link">DUE DATE</a>
+                            </th>
+                            <th class="border-0">
+                                <a id="days_to_due_date_link">DAYS TO DUE DATE</a>
+                            </th>
                             <th class="border-0">PAID</th>
                             <th class="border-0">PAYMENT DATE</th>
                             <th class="border-0 rounded-end">ASAP</th>
@@ -107,12 +121,30 @@
                             <td> {{ cost.invoice.pln_gross_amount }}</td>
                             <td> {{ cost.invoice.pln_net_amount }}</td>
                             <td> {{ cost.invoice.due_date }}</td>
+                            <td> {{ cost.invoice.days_to_due_date }}</td>
                             <td> {{ cost.paid }}</td>
                             <td> {{ cost.payment_date }}</td>
                             <td> {{ cost.asap }}</td>
                         <!-- End of Item -->
                         </tr>
                         {% endfor %}
+                        <tr>
+                            <td>SUM</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>{{  total_est }}</td>
+                            <td></td>
+                            <td></td>
+                            <td>{{ total_ga }}</td>
+                            <td>{{ total_na }}</td>
+                            <td>{{ total_pga }}</td>
+                            <td>{{ total_pna }}</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -121,18 +153,30 @@
 {% endblock %}
 {% block javascripts %}
     <script>
-        document.getElementById('link1').addEventListener('click', function() {
-        var url = window.location.href;
-        var hasSorting = url.includes('o=');
+    addSortingListener('created_date_link', 'created_date');
+    addSortingListener('id_link', 'id');
+    addSortingListener('due_date_link', 'due_date')
+    addSortingListener('days_to_due_date_link', 'days_to_due_date')
 
-    if (!hasSorting) {
-        // If there's no sorting in the URL, add 'o=-id'
-        window.location.href = url + (url.includes('?') ? '&' : '?') + 'o=-id';
-    } else {
-        // If there's sorting in the URL, reverse it
-        var reversedSorting = url.includes('o=-id') ? 'o=id' : 'o=-id';
-        window.location.href = url.replace(/o=-?id/, reversedSorting);
-    }
-});
+        function addSortingListener(elementId, sortingField) {
+            document.getElementById(elementId).addEventListener('click', function () {
+                var url = new URL(window.location.href);
+                var params = new URLSearchParams(url.search);
+                var currentSortingField = params.get('o');
+
+                if (!currentSortingField || currentSortingField !== sortingField && currentSortingField !== '-' + sortingField) {
+                    // If there's no sorting in the URL or a different sorting field is provided, set 'o' to '-' + sortingField
+                    params.set('o', '-' + sortingField);
+                } else {
+                    // If the same sorting field is provided, reverse it
+                    var reversedSorting = currentSortingField === '-' + sortingField ? sortingField : '-' + sortingField;
+                    params.set('o', reversedSorting);
+                }
+
+                // Apply the new parameters to the URL
+                url.search = params.toString();
+                window.location.href = url.toString();
+            });
+        }
     </script>
 {% endblock %}
