@@ -74,6 +74,7 @@
                         <div class="col-md-3 mb-3">
                             {{ invoice_form.gross_amount|as_crispy_field }}
                         </div>
+                    </div>
                     <div class="row">
                         <div class="col-md-3 mb-3">
                            {{ invoice_form.file|as_crispy_field }}
@@ -81,7 +82,7 @@
                     </div>
                         {{ invoice_form.in_optima|as_crispy_field }}
                         {{ invoice_form.printed|as_crispy_field }}
-                    </div>
+                </div>
                 <div class="form-group">
                     <button class="btn btn-outline-info" type="submit">Save Cost</button>
                 </div>
