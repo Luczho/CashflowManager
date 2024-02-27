@@ -24,6 +24,6 @@ def get_exchange_rates(table, start_date=None, end_date=None):
 
 
 def run():
-    get_exchange_rates("A", '2024-01-06', '2024-01-08')
+    get_exchange_rates("A", '2024-01-08', '2024-02-27')
 
 
