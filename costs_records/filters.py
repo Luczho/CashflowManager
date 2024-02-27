@@ -9,7 +9,9 @@ class CostFilter(django_filters.FilterSet):
         field_name='created_date', widget=DateRangeWidget(attrs={'type': 'date'}))
     due_date_range = django_filters.DateFromToRangeFilter(
         field_name='invoice__due_date', widget=DateRangeWidget(attrs={'type': 'date'}))
-    due_date = django_filters.DateFromToRangeFilter(field_name='invoice__due_date')
+    planned_payment_date_range = django_filters.DateFromToRangeFilter(
+        field_name='planned_payment_date', widget=DateRangeWidget(attrs={'type': 'date'}))
+    # due_date = django_filters.DateFromToRangeFilter(field_name='invoice__due_date')
 
     invoice_number = django_filters.CharFilter(field_name='invoice__number', lookup_expr='icontains')
     cost_description = django_filters.CharFilter(field_name='cost_description', lookup_expr='icontains')
@@ -24,8 +26,8 @@ class CostFilter(django_filters.FilterSet):
 
     class Meta:
         model = Cost
-        fields = ['created_date_range', 'invoice_number', 'customer', 'supplier', 'cost_description',
-                  'due_date_range', 'paid', 'invoice__currency']
+        fields = ['created_date_range', 'invoice_number', 'customer', 'supplier', 'category', 'cost_description',
+                  'planned_payment_date_range', 'due_date_range', 'paid', 'invoice__currency']
 
     def __init__(self, *args, **kwargs):
         super(CostFilter, self).__init__(*args, **kwargs)
