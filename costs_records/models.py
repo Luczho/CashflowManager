@@ -96,6 +96,7 @@ class Cost(models.Model):
     supplier = models.ForeignKey(Company, on_delete=models.DO_NOTHING, related_name='supplier_costs')
     cost_description = models.TextField()
     estimated_cost = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    planned_payment_date = models.DateField(blank=True, null=True)
     invoice = models.OneToOneField(Invoice, blank=True, null=True, on_delete=models.DO_NOTHING, related_name='cost')
     paid = models.BooleanField(default=False)
     payment_date = models.DateField(blank=True, null=True)
