@@ -21,7 +21,7 @@
             </div>
             <div class="d-block">
               <h2 class="h5 mb-3">Hi, Jane</h2>
-              <a href="/costs_records/templates/costs_records/sign-in.html" class="btn btn-secondary btn-sm d-inline-flex align-items-center">
+              <a href="/users/templates/users/sign-in.html" class="btn btn-secondary btn-sm d-inline-flex align-items-center">
                 <svg class="icon icon-xxs me-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                 Sign Out
               </a>
@@ -45,11 +45,11 @@
             </a>
           </li>
           <li class="nav-item  active ">
-            <a href="/costs_records/templates/costs_records/base.html" class="nav-link">
+            <a href="{% url 'register' %}" class="nav-link">
               <span class="sidebar-icon">
                 <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path><path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path></svg>
               </span>
-              <span class="sidebar-text">Dashboard</span>
+              <span class="sidebar-text">Register</span>
             </a>
           </li>
           <li class="nav-item">
@@ -107,11 +107,6 @@
                 <li class="nav-item ">
                   <a class="nav-link" href="{% url 'costs-list-asap' %}">
                     <span class="sidebar-text">Asap Costs Table</span>
-                  </a>
-                </li>
-                <li class="nav-item ">
-                  <a class="nav-link" href="{% url 'costs-list-urgent' %}">
-                    <span class="sidebar-text">Urgent Costs Table</span>
                   </a>
                 </li>
               </ul>
@@ -194,22 +189,22 @@
               id="submenu-pages" aria-expanded="false">
               <ul class="flex-column nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="/costs_records/templates/costs_records/sign-in.html">
+                  <a class="nav-link" href="/users/templates/users/sign-in.html">
                     <span class="sidebar-text">Sign In</span>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="/costs_records/templates/costs_records/sign-up.html">
+                  <a class="nav-link" href="/users/templates/users/sign-up_form.html">
                     <span class="sidebar-text">Sign Up</span>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="/costs_records/templates/costs_records/forgot-password.html">
+                  <a class="nav-link" href="/users/templates/users/forgot-password.html">
                     <span class="sidebar-text">Forgot password</span>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="/costs_records/templates/costs_records/reset-password.html">
+                  <a class="nav-link" href="/users/templates/users/reset-password.html">
                     <span class="sidebar-text">Reset password</span>
                   </a>
                 </li>
