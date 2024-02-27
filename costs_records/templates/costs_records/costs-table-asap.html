@@ -1,30 +1,85 @@
 {% extends 'costs_records/base.html' %}
+{% load crispy_forms_tags %}
 {% load static %}
 {% block content %}
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!-- Modal -->
+    <div class="modal fade" id="paymentModal" tabindex="-1" role="dialog" aria-labelledby="paymentModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+            <h5 class="modal-title" id="paymentModalLabel">Set the payment date</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div class="modal-body">
-            ...
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Save changes</button>
-          </div>
+          <form id="updateCostForm" method="post">
+              {% csrf_token %}
+              <input type="hidden" id="costId" name="cost_id">
+              <div class="modal-body">
+                <div class="form-group">
+                   {{ pd_form.payment_date | as_crispy_field}}
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save changes</button>
+              </div>
+          </form>
         </div>
       </div>
     </div>
-    <h2>UNPAID</h2>
+    <!-- / Modal -->
+    <!-- Filters -->
     <div class="card border-0 shadow mb-4">
         <div class="card-body">
+            <span
+              class="nav-link  collapsed  d-flex justify-content-between align-items-center"
+              data-bs-toggle="collapse" data-bs-target="#filters">
+              <span>
+                  <span class="sidebar-icon">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-filter-square" viewBox="0 0 16 16">
+                          <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                          <path d="M6 11.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5"/>
+                      </svg>
+                  </span>
+              </span>
+            </span>
+            <div class="multi-level collapse " role="list" id="filters" aria-expanded="false">
+              <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Filters</legend>
+                <form method="get">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            {{ filter.form.planned_payment_date_range | as_crispy_field }}
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            {{ filter.form.customer | as_crispy_field }}
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            {{ filter.form.category | as_crispy_field }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-1 mb-1">
+                            <div class="form-group">
+                                <button class="btn btn-success" type="submit">Apply</button>
+                            </div>
+                        </div>
+                        <div class="col-md-1 mb-1">
+                            <a href="{% url 'costs-list-asap' %}" class="btn btn-danger" type="button">Clear</a>
+                        </div>
+                    </div>
+                </form>
+            </fieldset>
+            </div>
+        </div>
+    </div>
+    <!-- / Filters -->
+    <div class="card border-0 shadow mb-4">
+        <div class="card-body">
+            <h2 class="h5 mb-4">Unpaid</h2>
             <div class="table-responsive">
-                <table class="table table-centered table-nowrap mb-0 rounded">
+                <table class="table table-centered table-secondary mb-0 rounded">
                     <thead class="thead-light">
                         <tr>
                             <th class="border-0 rounded-start"></th>
@@ -36,6 +91,7 @@
                             <th class="border-0">SUPPLIER</th>
                             <th class="border-0">COST DESCRIPTION</th>
                             <th class="border-0">ESTIMATED COST</th>
+                            <th class="border-0">PLANNED PAYMENT DATE</th>
                             <th class="border-0">INVOICE NUMBER</th>
                             <th class="border-0">GROSS PLN</th>
                             <th class="border-0">NET PLN</th>
@@ -48,11 +104,11 @@
                     <tbody>
                         <!-- Item -->
                         {% for cost in costs %}
-                            {% if cost.asap and not cost.paid %}
+                            {% if cost.planned_payment_date and not cost.paid %}
                             <tr>
                                 <td>
-                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-                                        Launch demo modal
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#paymentModal" data-url="{% url 'update-cost-payment' cost.id %}">
+                                        PAID
                                     </button>
                                 </td>
                                 <td class="border-0">
@@ -71,6 +127,7 @@
                                 <td> {{ cost.supplier.name }}</td>
                                 <td> {{ cost.cost_description }}</td>
                                 <td> {{ cost.estimated_cost }}</td>
+                                <td> {{ cost.planned_payment_date}}</td>
                                 <td> {{ cost.invoice.number }}</td>
                                 <td> {{ cost.invoice.pln_gross_amount }}</td>
                                 <td> {{ cost.invoice.pln_net_amount }}</td>
@@ -87,9 +144,9 @@
             </div>
         </div>
     </div>
-    <h2>PAID</h2>
     <div class="card border-0 shadow mb-4">
         <div class="card-body">
+            <h2 class="h5 mb-4">Paid</h2>
             <div class="table-responsive">
                 <table class="table table-centered table-success mb-0 rounded">
                     <thead class="thead-light">
@@ -102,6 +159,7 @@
                             <th class="border-0">SUPPLIER</th>
                             <th class="border-0">COST DESCRIPTION</th>
                             <th class="border-0">ESTIMATED COST</th>
+                            <th class="border-0">PLANNED PAYMENT DATE</th>
                             <th class="border-0">INVOICE NUMBER</th>
                             <th class="border-0">GROSS PLN</th>
                             <th class="border-0">NET PLN</th>
@@ -114,7 +172,7 @@
                     <tbody>
                         <!-- Item -->
                         {% for cost in costs %}
-                            {% if cost.asap and cost.paid %}
+                            {% if cost.planned_payment_date and cost.paid %}
                             <tr>
                                 <td class="border-0">
                                             <a href="{% url 'cost-detail' cost.id %}" class="d-flex align-items-center">
@@ -132,6 +190,7 @@
                                 <td> {{ cost.supplier.name }}</td>
                                 <td> {{ cost.cost_description }}</td>
                                 <td> {{ cost.estimated_cost }}</td>
+                                <td> {{ cost.planned_payment_date }}</td>
                                 <td> {{ cost.invoice.number }}</td>
                                 <td> {{ cost.invoice.pln_gross_amount }}</td>
                                 <td> {{ cost.invoice.pln_net_amount }}</td>
@@ -151,18 +210,13 @@
 {% endblock %}
 {% block javascripts %}
     <script>
-    $(document).ready(function()
-    {
-        console.log('hello');
-        $('#exampleModal').on('show.bs.modal', function (event) {
-                    console.log('hello modal');
-          var button = $(event.relatedTarget) // Button that triggered the modal
-          var recipient = button.data('whatever') // Extract info from data-* attributes
-          // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-          // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-          var modal = $(this)
-          modal.find('.modal-title').text('New message to ' + recipient)
-          modal.find('.modal-body input').val(recipient)
+    $(document).ready(function() {
+        $('#paymentModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget); // Button that triggered the modal
+            var url = button.data('url'); // Get the URL from data-url attribute
+
+            // Set the form's action attribute
+            $('#updateCostForm').attr('action', url);
         });
     });
 
