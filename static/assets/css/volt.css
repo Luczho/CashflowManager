@@ -1327,7 +1327,14 @@ thead,
 tbody,
 tfoot,
 tr,
-td,
+td {
+    max-width: 300px;
+    word-wrap: break-word;
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 th {
     border-color: inherit;
     border-style: solid;
@@ -28756,5 +28763,9 @@ article .h1, article .h2, article .h3, article .h4, article .h5, article .h6 {
 
 .datepicker-dropdown {
     z-index: 9999;
+}
+
+ul.errorlist {
+    color: red;
 }
 /*# sourceMappingURL=volt.css.map */
