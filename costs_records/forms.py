@@ -23,6 +23,23 @@ class CostForm(forms.ModelForm):
         self.fields['supplier'].queryset = Company.objects.filter(is_contractor=True)
 
 
+class PaymentDateForm(forms.ModelForm):
+
+    class Meta:
+        model = Cost
+        fields = ['payment_date', 'planned_payment_date']
+        widgets = {
+            'payment_date': forms.widgets.DateInput(attrs={'type': 'date'}),
+            'planned_payment_date': forms.widgets.DateInput(attrs={'type': 'date'})
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(PaymentDateForm, self).__init__(*args, **kwargs)
+
+        self.fields['payment_date'].required = False
+        self.fields['planned_payment_date'].required = False
+
+
 class CompanyForm(forms.ModelForm):
     class Meta:
         model = Company
